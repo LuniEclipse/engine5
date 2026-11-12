@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VictoryCore — V5 Engine</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #111; }
+        canvas { display: block; }
+        #info {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+            color: #ff8c00; /* Лавовый цвет */
+            font-family: 'Segoe UI', sans-serif;
+            font-weight: bold;
+            pointer-events: none;
+            text-shadow: 0 0 10px #ff4500;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">VictoryCore V5 — Первый тест</div>
+    
+    <!-- Подключаем Three.js -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+
+        // 1. Создаем сцену
+        const scene = new THREE.Scene();
+
+        // 2. Создаем камеру (угол обзора, пропорции, ближняя и дальняя границы)
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 5;
+
+        // 3. Создаем рендерер (то, что будет рисовать картинку)
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // 4. Создаем кубик
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        // Делаем материал лавового цвета с подсветкой
+        const material = new THREE.MeshStandardMaterial({ color: 0xff4500, roughness: 0.3 }); 
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+
+        // 5. Добавляем свет, чтобы кубик не был плоским
+        const ambientLight = new THREE.AmbientLight(0x404040); // Мягкий свет
+        scene.add(ambientLight);
+
+        const pointLight = new THREE.PointLight(0xffffff, 100);
+        pointLight.position.set(5, 5, 5);
+        scene.add(pointLight);
+
+        // 6. Анимация (крутим кубик)
+        function animate() {
+            requestAnimationFrame(animate);
+
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Обработка изменения размера экрана (чтобы на телефоне не ломалось)
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
